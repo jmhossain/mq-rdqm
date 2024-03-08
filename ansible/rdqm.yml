@@ -6,9 +6,10 @@
     - assert:
         that:
           - groups['rdqm'] | length == 3
+          - groups['dr'] | length == 3
 
     - include_role:
-        name: rdqm-os
+        name: os-check
 
     - name: Copy MQ Server image
       copy:
@@ -35,114 +36,29 @@
       become: true
 
     - include_role:
-        name: drbd-kmod
+        name: rdqm-prereqs
 
     - include_role:
-        name: rdqm-el
+        name: mq-install
 
-    - name: Check if firewalld is running
-      command: "systemctl is-active firewalld"
-      register: firewalld_active
-      failed_when: firewalld_active.rc > 3
-
-    - name: Configure firewall for RDQM
-      command: /opt/mqm/samp/rdqm/firewalld/configure.sh
-      when: firewalld_active.rc == 0
-      become: true
-
-    - name: Configure SELinux for DRBD
-      command: semanage permissive -a drbd_t
-      become: true
+    - include_role:
+        name: system-config
 
     - name: Create sudoers file for mqm
       copy:
-              dest: /etc/sudoers.d/mqm
-              content: |
-                mqm ALL=(root) NOPASSWD: /opt/mqm/bin/crtmqm, /opt/mqm/bin/dltmqm, /opt/mqm/bin/rdqmadm, /opt/mqm/bin/rdqmstatus, /opt/mqm/bin/rdqmdr
+        dest: /etc/sudoers.d/mqm
+        content: |
+          mqm ALL=(root) NOPASSWD: /opt/mqm/bin/crtmqm, /opt/mqm/bin/dltmqm, /opt/mqm/bin/rdqmadm, /opt/mqm/bin/rdqmstatus, /opt/mqm/bin/rdqmdr
       become: true
 
     - name: Create rdqmadmin account
       user:
-              name: rdqmadmin
-              group: mqm
-              groups: haclient
-              password: "{{ rdqmadmin_password }}"
+        name: rdqmadmin
+        group: mqm
+        groups: haclient
+        password: "{{ rdqmadmin_password }}"
       become: true
 
-    - name: Create drbdpool volume group
-      lvg:
-        vg: drbdpool
-        pvs: "{{ DRBD_device }}"
-      become: true
-
-    - name: Update rdqm.ini on primary nodes
-      template:
-        src: rdqm.ini.j2
-        dest: /var/mqm/rdqm.ini
-      vars:
-        Name1: "{{ hostvars[groups['rdqm'][0]].inventory_hostname }}"
-        Name2: "{{ hostvars[groups['rdqm'][1]].inventory_hostname }}"
-        Name3: "{{ hostvars[groups['rdqm'][2]].inventory_hostname }}"
-        IP1: "{{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
-        IP2: "{{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
-        IP3: "{{ hostvars[groups['rdqm'][2]].rdqm_ha_replication }}"
-        DR1: "{{ hostvars[groups['rdqm'][0]].rdqm_dr_replication }}"
-        DR2: "{{ hostvars[groups['rdqm'][1]].rdqm_dr_replication }}"
-        DR3: "{{ hostvars[groups['rdqm'][2]].rdqm_dr_replication }}"
-      become: true
-      become_user: rdqmadmin
-      when: inventory_hostname in groups["rdqm"]
-
-    - name: Update rdqm.ini on dr nodes 
-      template:
-        src: rdqmdr.ini.j2
-        dest: /var/mqm/rdqm.ini
-      vars:
-        Name1: "{{ hostvars[groups['dr'][0]].inventory_hostname }}"
-        Name2: "{{ hostvars[groups['dr'][1]].inventory_hostname }}"
-        Name3: "{{ hostvars[groups['dr'][2]].inventory_hostname }}"
-        IP1: "{{ hostvars[groups['dr'][0]].rdqm_ha_replication }}"
-        IP2: "{{ hostvars[groups['dr'][1]].rdqm_ha_replication }}"
-        IP3: "{{ hostvars[groups['dr'][2]].rdqm_ha_replication }}"
-        DR1: "{{ hostvars[groups['dr'][0]].rdqm_dr_replication }}"
-        DR2: "{{ hostvars[groups['dr'][1]].rdqm_dr_replication }}"
-        DR3: "{{ hostvars[groups['dr'][2]].rdqm_dr_replication }}"
-      become: true
-      become_user: rdqmadmin
-      when: inventory_hostname in groups["dr"]
-
-#    - name: Run rdqmadm
-#      command: "rdqmadm -c"
-#      become: true
-#      become_user: rdqmadmin
-
-#    - name: Run crtmqm on main primary node
-#      command: "crtmqm -sx -rr p -rn DRG1 -rp 7001 -fs 3 QMHADR"
-#      when: inventory_hostname == groups["rdqm"][0]
-#      become: true
-#      become_user: rdqmadmin
-
-#    - name: Run crtmqm on main secondary nodes
-#      command: "crtmqm -sxs -rr p -rn DRG1 -rp 7001 -fs 3 QMHADR"
-#      when: inventory_hostname == groups["rdqm"][1] or inventory_hostname == groups["rdqm"][2]
-#      become: true
-#      become_user: rdqmadmin
-
-#    - name: Run crtmqm on dr primary node
-#      command: "crtmqm -sx -rr s -rn DRG2 -rp 7001 -fs 3 QMHADR"
-#      when: inventory_hostname == groups["dr"][0]
-#      become: true
-#      become_user: rdqmadmin
-
-#    - name: Run crtmqm on main secondary node
-#      command: "crtmqm -sxs -rr s -rn DRG2 -rp 7001 -fs 3 QMHADR"
-#      when: inventory_hostname == groups["dr"][1] or inventory_hostname == groups["dr"][2]
-#      become: true
-#      become_user: rdqmadmin
-
-#    - name: Add Floating Ip to queue manager
-#      command: "rdqmint -m QMHADR -a -f 10.0.1.20 -l ens35"
-#      when: inventory_hostname == groups["rdqm"][0] or inventory_hostname == groups["dr"][0]
-#      become: true
-#      become_user: rdqmadmin
+    - include_role:
+        name: ha-config
 

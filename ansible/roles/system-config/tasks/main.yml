@@ -1,0 +1,26 @@
+- name: Check if firewalld is running
+  command: "systemctl is-active firewalld"
+  register: firewalld_active
+  failed_when: firewalld_active.rc > 3
+
+- name: Configure firewall for RDQM
+  command: /opt/mqm/samp/rdqm/firewalld/configure.sh
+  when: firewalld_active.rc == 0
+  become: true
+
+- name: Add port 1420 to firewall
+  command: "sudo firewall-cmd --add-port=1420/tcp"
+  when: firewalld_active.rc == 0
+  become: true
+
+- name: Configure SELinux for DRBD
+  command: semanage permissive -a drbd_t
+  become: true
+
+- name: Create drbdpool volume group
+  lvg:
+    vg: drbdpool
+    pvs: "{{ DRBD_device }}"
+  become: true
+
+

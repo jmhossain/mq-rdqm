@@ -1,0 +1,29 @@
+- name: Run mq license script
+  command: "/home/ibmuser/mqrdqm/MQServer/mqlicense.sh -accept"
+  become: true
+
+- name: Install MQ Server and Pacemaker
+  yum:
+    name: MQSeries*
+    state: latest
+    disable_gpg_check: true
+  become: true
+
+- name: Set MQ installation as the primary installation
+  command: /opt/mqm/bin/setmqinst -i -p /opt/mqm
+  become: true
+
+- name: find rdqm rpm files and register the result 
+  find:
+    paths: "/home/ibmuser/mqrdqm/MQServer/Advanced/RDQM"
+    patterns: "*.rpm"
+  register: rdqm_rpm
+
+- set_fact:
+    rdqm_list: "{{ rdqm_rpm.files | map(attribute='path') | list}}"
+
+- name: install rpm files using rpm_list
+  yum:
+    name: "{{rdqm_list}}"
+    state: present
+  become: true

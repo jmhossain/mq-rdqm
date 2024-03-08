@@ -1,0 +1,41 @@
+- name: Update rdqm.ini on primary nodes
+  template:
+    src: rdqm.ini.j2
+    dest: /var/mqm/rdqm.ini
+  vars:
+    Name1: "{{ hostvars[groups['rdqm'][0]].inventory_hostname }}"
+    Name2: "{{ hostvars[groups['rdqm'][1]].inventory_hostname }}"
+    Name3: "{{ hostvars[groups['rdqm'][2]].inventory_hostname }}"
+    IP1: "{{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
+    IP2: "{{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
+    IP3: "{{ hostvars[groups['rdqm'][2]].rdqm_ha_replication }}"
+    DR1: "{{ hostvars[groups['rdqm'][0]].rdqm_dr_replication }}"
+    DR2: "{{ hostvars[groups['rdqm'][1]].rdqm_dr_replication }}"
+    DR3: "{{ hostvars[groups['rdqm'][2]].rdqm_dr_replication }}"
+  become: true
+  become_user: rdqmadmin
+  when: inventory_hostname in groups["rdqm"]
+
+- name: Update rdqm.ini on dr nodes 
+  template:
+    src: rdqmdr.ini.j2
+    dest: /var/mqm/rdqm.ini
+  vars:
+    Name1: "{{ hostvars[groups['dr'][0]].inventory_hostname }}"
+    Name2: "{{ hostvars[groups['dr'][1]].inventory_hostname }}"
+    Name3: "{{ hostvars[groups['dr'][2]].inventory_hostname }}"
+    IP1: "{{ hostvars[groups['dr'][0]].rdqm_ha_replication }}"
+    IP2: "{{ hostvars[groups['dr'][1]].rdqm_ha_replication }}"
+    IP3: "{{ hostvars[groups['dr'][2]].rdqm_ha_replication }}"
+    DR1: "{{ hostvars[groups['dr'][0]].rdqm_dr_replication }}"
+    DR2: "{{ hostvars[groups['dr'][1]].rdqm_dr_replication }}"
+    DR3: "{{ hostvars[groups['dr'][2]].rdqm_dr_replication }}"
+  become: true
+  become_user: rdqmadmin
+  when: inventory_hostname in groups["dr"]
+
+#- name: Run rdqmadm
+#  command: "rdqmadm -c"
+#  become: true
+#  become_user: rdqmadmin
+
