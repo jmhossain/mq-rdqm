@@ -1,3 +1,18 @@
+- name: Create sudoers file for mqm
+  copy:
+    dest: /etc/sudoers.d/mqm
+    content: |
+      mqm ALL=(root) NOPASSWD: /opt/mqm/bin/crtmqm, /opt/mqm/bin/dltmqm, /opt/mqm/bin/rdqmadm, /opt/mqm/bin/rdqmstatus, /opt/mqm/bin/rdqmdr
+  become: true
+
+- name: Create rdqmadmin account
+  user:
+    name: rdqmadmin
+    group: mqm
+    groups: haclient
+    password: "{{ rdqmadmin_password }}"
+  become: true
+
 - name: Update rdqm.ini on primary nodes
   template:
     src: rdqm.ini.j2
@@ -33,9 +48,4 @@
   become: true
   become_user: rdqmadmin
   when: inventory_hostname in groups["dr"]
-
-#- name: Run rdqmadm
-#  command: "rdqmadm -c"
-#  become: true
-#  become_user: rdqmadmin
 

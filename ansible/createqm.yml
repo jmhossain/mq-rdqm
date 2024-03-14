@@ -3,6 +3,11 @@
   strategy: free
 
   tasks:
+    #- name: Run rdqmadm
+    #  command: "rdqmadm -c"
+    #  become: true
+    #  become_user: rdqmadmin
+
     - name: Run crtmqm on main primary node
       command: "crtmqm -sx -rr p -rn DRG1 -rp 7001 -fs 3 QMHADR"
       when: inventory_hostname == groups["rdqm"][0]
