@@ -6,7 +6,7 @@
 
   - name: Check for modver script
     stat:
-      path: "/home/ibmuser/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el7/kmod-drbd-9/modver"
+      path: "{{base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el9/kmod-drbd-9/modver"
     register: stat_result
 
   - fail:
@@ -15,7 +15,7 @@
 
   - name: Run modver
     when: stat_result.stat.exists
-    command: "/home/ibmuser/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el7/kmod-drbd-9/modver"
+    command: "{{base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el9/kmod-drbd-9/modver"
     register: modver_output
 
   - name: Install DRBD kernel module
@@ -25,14 +25,14 @@
 
   - name: Install DRBD kernel module
     yum:
-      name: "/home/ibmuser/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el7/kmod-drbd-9/{{ modver_output.stdout }}"
+      name: "{{base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el9/kmod-drbd-9/{{ modver_output.stdout }}"
     when: stat_result.stat.exists
     become: true
 
   # Get a list of rpms from a directory
   - name: find rpm files and register the result 
     find:
-      paths: "/home/ibmuser/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el7/drbd-utils-9"
+      paths: "{{base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el9/drbd-utils-9"
       patterns: "*.rpm"
     register: rpm_files
 
@@ -49,7 +49,7 @@
   
   - name: find pacemaker rpm files and register the result 
     find:
-      paths: "/home/ibmuser/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el7/pacemaker-1"
+      paths: "{{base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el9/pacemaker-2"
       patterns: "*.rpm"
     register: pacemaker_rpms
   

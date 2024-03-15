@@ -1,12 +1,20 @@
+- name: Create local yum repo for MQ Server
+  yum_repository:
+    name: "IBM-MQ-{{ mq_release }}-x86_64"
+    description: "IBM MQ {{ mq_release }} x86_64"
+    baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
+    enabled: true
+    gpgcheck: false
+  become: true
+ 
 - name: Run mq license script
-  command: "/home/ibmuser/mqrdqm/MQServer/mqlicense.sh -accept"
+  command: "{{ base_dir }}/mqrdqm/MQServer/mqlicense.sh -accept"
   become: true
 
 - name: Install MQ Server and Pacemaker
   yum:
     name: MQSeries*
     state: latest
-    disable_gpg_check: true
   become: true
 
 - name: Set MQ installation as the primary installation
@@ -15,7 +23,7 @@
 
 - name: find rdqm rpm files and register the result 
   find:
-    paths: "/home/ibmuser/mqrdqm/MQServer/Advanced/RDQM"
+    paths: "{{ base_dir }}/mqrdqm/MQServer/Advanced/RDQM"
     patterns: "*.rpm"
   register: rdqm_rpm
 
@@ -26,4 +34,5 @@
   yum:
     name: "{{rdqm_list}}"
     state: present
+    disable_gpg_check: true
   become: true

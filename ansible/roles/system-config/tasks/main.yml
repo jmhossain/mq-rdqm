@@ -8,13 +8,25 @@
   when: firewalld_active.rc == 0
   become: true
 
-- name: Add port 1420 to firewall
-  command: "sudo firewall-cmd --add-port=1420/tcp"
-  when: firewalld_active.rc == 0
+#- name: Add port 1420 to firewall
+#  command: "sudo firewall-cmd --add-port=1420/tcp"
+#  when: firewalld_active.rc == 0
+#  become: true
+
+- name: Install semanage
+  yum:
+    name: policycoreutils-python-utils
+    state: present
   become: true
 
 - name: Configure SELinux for DRBD
   command: semanage permissive -a drbd_t
+  become: true
+
+- name: Install lvm2
+  yum:
+    name: lvm2
+    state: present
   become: true
 
 - name: Create drbdpool volume group
@@ -22,5 +34,3 @@
     vg: drbdpool
     pvs: "{{ DRBD_device }}"
   become: true
-
-

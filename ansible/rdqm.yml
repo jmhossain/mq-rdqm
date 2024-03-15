@@ -11,6 +11,22 @@
     - include_role:
         name: os-check
 
+#    - name: Create mqm group
+#      group:
+#        gid: "{{ mqm_gid }}"
+#        name: mqm
+#      become: true
+
+#    - name: Create mqm user
+#      user:
+#        uid: "{{ mqm_uid }}"
+#        name: mqm
+#        group: mqm
+#        password: "{{ mqm_password }}"
+#        home: "{{ mqm_home }}"
+#        generate_ssh_key: yes
+#     become: true
+
     - name: Copy MQ Server image
       copy:
         src: "{{ mq_server_image }}"
@@ -18,22 +34,20 @@
 
     - name: Create directory for MQ image
       file:
-        path: "/home/ibmuser/mqrdqm"
+        path: "{{ base_dir }}/mqrdqm"
         state: directory
+
+    - name: Install unzip
+      yum:
+        name: unzip
+        state: present
+      become: true
 
     - name: Unarchive the MQ Server image
       unarchive:
         src: "{{ mq_server_image }}"
-        dest: "/home/ibmuser/mqrdqm"
+        dest: "{{ base_dir }}/mqrdqm"
         remote_src: yes
-
-    - name: Create local yum repo for MQ Server
-      yum_repository:
-        name: "IBM-MQ-{{ mq_release }}-x86_64"
-        description: "IBM MQ {{ mq_release }} x86_64"
-        baseurl: "file:///home/ibmuser/mqrdqm/MQServer"
-        state: present
-      become: true
 
     - include_role:
         name: rdqm-prereqs

@@ -1,8 +1,21 @@
-mq_release: "9.3.1"
-mq_client_image: "/home/ibmuser/Downloads/{{ mq_release }}.0-IBM-MQC-LinuxX64.tar.gz"
-mq_server_image: "/home/ibmuser/Downloads/IBM_MQ_{{ mq_release }}_LINUX_X86-64.tar.gz"
+mq_release: "9.3.5"
+base_dir: "/tmp"
+mq_server_image: "{{ base_dir }}/{{ mq_release }}.0-IBM-MQ-Advanced-for-Developers-LinuxX64.tar.gz"
 
-mqm_gid: 1000
-mqm_uid: 1000
+mq_client_image: "{{ base_dir }}/{{ mq_release }}.0-IBM-MQC-LinuxX64.tar.gz"
 
-DRBD_device: "/dev/sdb1"
+mqm_gid: 1001
+mqm_uid: 1001
+mqm_home: "/var/mqm"
+mqm_password: "passw0rd"
+
+DRBD_device: "/dev/nvme1n1"
+
+rdqm_subnet_1: "10.0.176.1"
+rdqm_subnet_2: "10.0.192.1"
+rdqm_subnet_3: "10.0.208.1"
+
+dr_subnet_1: "10.1.176.1"
+dr_subnet_2: "10.1.192.1"
+dr_subnet_3: "10.1.208.1"
+
