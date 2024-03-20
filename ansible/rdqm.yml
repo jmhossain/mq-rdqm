@@ -50,7 +50,7 @@
         remote_src: yes
 
     - include_role:
-        name: rdqm-prereqs
+        name: drbd
 
     - include_role:
         name: mq-install

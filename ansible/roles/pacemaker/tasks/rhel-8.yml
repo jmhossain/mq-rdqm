@@ -1,0 +1,31 @@
+---
+# tasks file for pacemaker
+- name: Install Pacemaker Pre-requisites
+  ansible.builtin.yum:
+    name:
+      - cifs-utils
+      - libtool-ltdl
+      - libxslt
+      - net-snmp-libs
+      - nfs-utils
+      - perl-TimeDate
+      - psmisc
+      - python36
+      - python3-lxml
+    state: present
+
+- name: find pacemaker rpm files and register the result 
+  find:
+    paths: "{{ base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el8/pacemaker-2"
+    patterns: "*.rpm"
+  register: pacemaker_rpms
+
+- set_fact:
+    pacemaker_list: "{{ pacemaker_rpms.files | map(attribute='path') | list}}"
+
+- name: install rpm files using rpm_list
+  yum:
+    name: "{{ pacemaker_list }}"
+    state: present
+  become: true
+

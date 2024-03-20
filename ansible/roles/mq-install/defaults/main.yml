@@ -1,0 +1,3 @@
+---
+# defaults file for mq-install
+rdqm_rpm: "MQSeriesRDQM-9.2.3-0.x86_64.rpm"

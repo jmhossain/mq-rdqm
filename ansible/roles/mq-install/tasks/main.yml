@@ -1,3 +1,5 @@
+---
+# tasks file for mq-install
 - name: Create local yum repo for MQ Server
   yum_repository:
     name: "IBM-MQ-{{ mq_release }}-x86_64"

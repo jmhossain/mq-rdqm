@@ -1,0 +1,51 @@
+---
+# tasks file for drbd
+- name: Import a key from a url
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://packages.linbit.com/package-signing-pubkey.asc
+  become: true
+  when: gpg_check is true
+
+- name: Check for modver script
+  stat:
+    path: "{{ base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el{{ ansible_distribution_major_version }}/kmod-drbd-9/modver"
+  register: stat_result
+
+- fail:
+    msg: "Only MQ versions that include modver are supported"
+  when: not stat_result.stat.exists
+
+- name: Run modver
+  when: stat_result.stat.exists
+  command: "{{base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el{{ ansible_distribution_major_version }}/kmod-drbd-9/modver"
+  register: modver_output
+
+- name: Install DRBD kernel module
+  block:
+  - debug:
+      msg: About to install the DRBD kernel module if not installed (may take a long time)
+
+- name: Install DRBD kernel module
+  yum:
+    name: "{{base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el{{ ansible_distribution_major_version }}/kmod-drbd-9/{{ modver_output.stdout }}"
+  when: stat_result.stat.exists
+  become: true
+
+# Get a list of rpms from a directory
+- name: find rpm files and register the result 
+  find:
+    paths: "{{base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el{{ ansible_distribution_major_version }}/drbd-utils-9"
+    patterns: "*.rpm"
+  register: rpm_files
+
+# Create a list of the rpms to use with the yum install command
+- set_fact:
+    rpm_list: "{{ rpm_files.files | map(attribute='path') | list}}"
+
+# Use yum to install with a list
+- name: install drbd utils
+  yum:
+    name: "{{rpm_list}}"
+    state: present
+  become: true
