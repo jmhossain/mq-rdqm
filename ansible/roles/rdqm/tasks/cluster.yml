@@ -67,4 +67,3 @@
   become: true
   become_user: "{{ rdqm_admin_user }}"
   when: inventory_hostname == groups["dr"][0] and mqm_ssh is true
-

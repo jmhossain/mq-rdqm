@@ -14,7 +14,7 @@
           enabled: true
           gpgcheck: true
           gpgkey: "file://{{ mq_gpg_location }}/ibm_mq_public.pgp"
-        become: true
+      become: true
     - name: Import a key from a url
       ansible.builtin.rpm_key:
         state: present
@@ -35,7 +35,7 @@
           baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
           enabled: true
           gpgcheck: false
-        become: true
+      become: true
   when: gpg_check is false
  
 - name: Run mq license script
