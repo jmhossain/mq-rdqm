@@ -1,3 +1,0 @@
----
-# vars file for rdqm
-rdqm_admin_password: "<encrypted password for rdqmadmin user>"

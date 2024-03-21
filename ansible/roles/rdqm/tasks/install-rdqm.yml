@@ -1,0 +1,14 @@
+- name: find rdqm rpm files and register the result 
+  find:
+    paths: "{{ base_dir }}/mqrdqm/MQServer/Advanced/RDQM"
+    patterns: "*.rpm"
+  register: rdqm_rpm
+
+- ansible.builtin.set_fact:
+    rdqm_list: "{{ rdqm_rpm.files | map(attribute='path') | list}}"
+
+- name: install rpm files using rpm_list
+  ansible.builtin.yum:
+    name: "{{rdqm_list}}"
+    state: present
+  become: true

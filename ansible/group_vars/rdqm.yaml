@@ -1,2 +1,3 @@
 rdqm_admin_user: rdqmadmin
 ssh_key_type: rsa
+rdqm_admin_password: "<encrypted password for rdqmadmin user>"
