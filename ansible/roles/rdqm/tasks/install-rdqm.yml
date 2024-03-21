@@ -12,3 +12,4 @@
     name: "{{rdqm_list}}"
     state: present
   become: true
+

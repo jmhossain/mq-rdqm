@@ -3,10 +3,9 @@
   strategy: free
   group_vars:
     - all.yaml
+    - mqm-user.yaml
     - drbd.yaml
     - mq.yaml
-    - mqm-user.yaml
-    - networking.yaml
     - rdqm.yaml
   tasks:
     - ansible.builtin.assert:
@@ -37,8 +36,11 @@
     - ansible.builtin.include_role:
         name: mq
     - ansible.builtin.include_role:
-        name: rdqm-cluster
-    - ansible.builtin.include_role:
-        name: rdqm-network
+        name: rdqm
+    - name: Create sudoers file for mqm
+      copy:
+        dest: /etc/sudoers.d/mqm
+        content: |
+                  mqm ALL=(root) NOPASSWD: /opt/mqm/bin/crtmqm, /opt/mqm/bin/dltmqm, /opt/mqm/bin/rdqmadm, /opt/mqm/bin/rdqmstatus, /opt/mqm/bin/rdqmdr
+      become: true
 
-        

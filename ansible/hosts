@@ -1,9 +1,9 @@
 [rdqm]
-rdqm1 ansible_user=ec2-user ansible_host=10.0.131.80 rdqm_ha_replication=10.0.183.110 
-rdqm2 ansible_user=ec2-user ansible_host=10.0.145.29 rdqm_ha_replication=10.0.202.217 
-rdqm3 ansible_user=ec2-user ansible_host=10.0.160.236 rdqm_ha_replication=10.0.216.112
+rdqm1 ansible_user=ec2-user ansible_host=10.0.131.80 rdqm_ha_replication=10.0.183.110 rdqm_ha_gateway=10.0.176.1 rdqm_dr_replication=10.0.80.120 rdqm_dr_gateway=10.0.80.1
+rdqm2 ansible_user=ec2-user ansible_host=10.0.145.29 rdqm_ha_replication=10.0.202.217 rdqm_ha_gateway=10.0.192.1 rdqm_dr_replication=10.0.96.220 rdqm_dr_gateway=10.0.96.1
+rdqm3 ansible_user=ec2-user ansible_host=10.0.160.236 rdqm_ha_replication=10.0.216.112 rdqm_ha_gateway=10.0.208.1 rdqm_dr_replication=10.0.112.120 rdqm_dr_gateway=10.0.112.1
 
 [dr]
-dr1 ansible_user=ec2-user ansible_host=10.1.133.152 rdqm_ha_replication=10.1.184.124
-dr2 ansible_user=ec2-user ansible_host=10.1.149.110 rdqm_ha_replication=10.1.195.110
-dr3 ansible_user=ec2-user ansible_host=10.1.163.100 rdqm_ha_replication=10.1.223.94 
+dr1 ansible_user=ec2-user ansible_host=10.1.133.152 rdqm_ha_replication=10.1.184.124 rdqm_ha_gateway=10.1.176.1 rdqm_dr_replication=10.1.80.120 rdqm_dr_gateway=10.1.80.1
+dr2 ansible_user=ec2-user ansible_host=10.1.149.110 rdqm_ha_replication=10.1.195.110 rdqm_ha_gateway=10.1.192.1 rdqm_dr_replication=10.1.96.220 rdqm_dr_gateway=10.1.96.1
+dr3 ansible_user=ec2-user ansible_host=10.1.163.100 rdqm_ha_replication=10.1.223.94  rdqm_ha_gateway=10.1.208.1 rdqm_dr_replication=10.1.112.120 rdqm_dr_gateway=10.1.112.1

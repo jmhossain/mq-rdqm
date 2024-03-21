@@ -1,7 +1,0 @@
-rdqm_subnet_1: "10.0.176.1"
-rdqm_subnet_2: "10.0.192.1"
-rdqm_subnet_3: "10.0.208.1"
-
-dr_subnet_1: "10.1.176.1"
-dr_subnet_2: "10.1.192.1"
-dr_subnet_3: "10.1.208.1"
