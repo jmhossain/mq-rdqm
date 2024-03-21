@@ -85,7 +85,7 @@
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
   vars:
-    IP1: "{{ hostvars[groups['rdqm'[2]].rdqm_ha_gateway }}"
+    IP1: "{{ hostvars[groups['rdqm'][2]].rdqm_ha_gateway }}"
     IP2: "{{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
     IP3: "{{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
     IP4: "{{ hostvars[groups['dr'][0]].rdqm_ha_replication }}"
