@@ -13,6 +13,7 @@
       - python36
       - python3-lxml
     state: present
+  become: true
 
 - name: find pacemaker rpm files and register the result
   find:

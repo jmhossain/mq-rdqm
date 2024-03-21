@@ -11,6 +11,7 @@
       - python3-lxml
       - python-unversioned-command
     state: present
+  become: true
 
 - name: find pacemaker rpm files and register the result
   find:

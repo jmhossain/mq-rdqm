@@ -15,6 +15,7 @@
       - psmisc
       - redhat-lsb-core
     state: present
+  become: true
 
 - name: find pacemaker rpm files and register the result
   find:
