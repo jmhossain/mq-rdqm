@@ -1,12 +1,12 @@
 ---
 - hosts: all
   strategy: free
-  group_vars:
-    - all.yaml
-    - mqm-user.yaml
-    - drbd.yaml
-    - mq.yaml
-    - rdqm.yaml
+  vars_files:
+    - ./group_vars/all.yaml
+    - ./group_vars/mqm-user.yaml
+    - ./group_vars/drbd.yaml
+    - ./group_vars/mq.yaml
+    - ./group_vars/rdqm.yaml
   tasks:
     - ansible.builtin.assert:
         that:
