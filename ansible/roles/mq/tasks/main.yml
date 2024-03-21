@@ -1,19 +1,19 @@
 ---
 # tasks file for mq-install
 - name: create yum repo with gpg key
-  block: 
+  block:
     - name: copy gpg key
       copy:
         src: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
         dest: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
     - name: create local yum repo for MQ Server
       yum_repository:
-          name: "IBM-MQ-{{ mq_release }}-x86_64"
-          description: "IBM MQ {{ mq_release }} x86_64"
-          baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
-          enabled: true
-          gpgcheck: true
-          gpgkey: "file://{{ mq_gpg_location }}/ibm_mq_public.pgp"
+        name: "IBM-MQ-{{ mq_release }}-x86_64"
+        description: "IBM MQ {{ mq_release }} x86_64"
+        baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
+        enabled: true
+        gpgcheck: true
+        gpgkey: "file://{{ mq_gpg_location }}/ibm_mq_public.pgp"
       become: true
     - name: Import a key from a url
       ansible.builtin.rpm_key:
@@ -23,19 +23,19 @@
   when: gpg_check is true
 
 - name: create yum repo without gpg key
-  block: 
+  block:
     - name: create local yum repo for MQ Server
       yum_repository:
-          name: "IBM-MQ-{{ mq_release }}-x86_64"
-          description: "IBM MQ {{ mq_release }} x86_64"
-          baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
-          enabled: true
-          gpgcheck: false
+        name: "IBM-MQ-{{ mq_release }}-x86_64"
+        description: "IBM MQ {{ mq_release }} x86_64"
+        baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
+        enabled: true
+        gpgcheck: false
       become: true
   when: gpg_check is false
- 
+
 - name: Run mq license script
-  command: "{{ base_dir }}/mqrdqm/MQServer/mqlicense.sh -accept"
+  ansible.builtin.command: "{{ base_dir }}/mqrdqm/MQServer/mqlicense.sh -accept"
   become: true
 
 - name: Install MQ Server and Pacemaker
@@ -45,6 +45,5 @@
   become: true
 
 - name: Set MQ installation as the primary installation
-  command: /opt/mqm/bin/setmqinst -i -p /opt/mqm
+  ansible.builtin.command: /opt/mqm/bin/setmqinst -i -p /opt/mqm
   become: true
-

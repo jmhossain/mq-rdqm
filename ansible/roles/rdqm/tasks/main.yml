@@ -9,9 +9,8 @@
   ansible.builtin.include_tasks: static-routes.yml
 
 - name: Set a fixed hostname
-  command: "hostnamectl --static set-hostname {{ inventory_hostname }}"
+  ansible.builtin.command: "hostnamectl --static set-hostname {{ inventory_hostname }}"
   become: true
 
 - name: Configure Pacemaker cluster and DRBD hosts
   ansible.builtin.include_tasks: cluster.yml
-

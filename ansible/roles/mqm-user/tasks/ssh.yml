@@ -119,8 +119,7 @@
   delegate_to: "{{ groups['rdqm'][2] }}"
 
 - name: Delete password for mqm
-  command: passwd -d mqm
+  ansible.builtin.command: passwd -d mqm
 
 - name: Lock password for mqm
-  command: passwd -l mqm
-
+  ansible.builtin.command: passwd -l mqm

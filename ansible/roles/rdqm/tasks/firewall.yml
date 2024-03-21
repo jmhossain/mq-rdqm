@@ -1,10 +1,9 @@
 - name: Check if firewalld is running
-  command: "systemctl is-active firewalld"
+  ansible.builtin.command: "systemctl is-active firewalld"
   register: firewalld_active
   failed_when: firewalld_active.rc > 3
 
 - name: Configure firewall for RDQM
-  command: /opt/mqm/samp/rdqm/firewalld/configure.sh
+  ansible.builtin.command: /opt/mqm/samp/rdqm/firewalld/configure.sh
   when: firewalld_active.rc == 0
   become: true
-

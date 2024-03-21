@@ -9,7 +9,7 @@
 
 - name: Run modver
   when: stat_result.stat.exists
-  command: "{{ base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el8/kmod-drbd-9/modver"
+  ansible.builtin.command: "{{ base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el8/kmod-drbd-9/modver"
   register: modver_output
 
 - name: Install DRBD kernel module

@@ -1,7 +1,7 @@
 ---
 # tasks file for drbd
 - name: Create drbdpool volume group
-  lvg:
+  community.general.lvg:
     vg: drbdpool
     pvs: "{{ DRBD_device }}"
   become: true
@@ -24,5 +24,6 @@
   become: true
 
 - name: Configure SELinux for DRBD
-  command: semanage permissive -a drbd_t
+  ansible.builtin.command: semanage permissive -a drbd_t
   become: true
+

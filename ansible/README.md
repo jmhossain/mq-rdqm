@@ -100,7 +100,7 @@ The ID of the standard RHEL 8 AppStream repository.
 
 ## RDQM Playbook
 
-Once the `hosts.ini` file has been updated and any variables, the RDQM playbook can be run with the command:
+Once the `hosts.ini` file has been updated and any variables, the RDQM playbook can be run with the ansible.builtin.command:
 
 ```bash
 ansible-playbook -l rdqm rdqm.yml
@@ -192,7 +192,7 @@ HA status:                              Normal
 
 ## Client Playbook
 
-Once the `hosts.ini` file has been updated and any variables, the client playbook can be run with the command:
+Once the `hosts.ini` file has been updated and any variables, the client playbook can be run with the ansible.builtin.command:
 
 ```bash
 ansible-playbook -l client client.yml

@@ -4,31 +4,30 @@
 
   tasks:
     - name: Run rdqmadm
-      command: "rdqmadm -c"
+      ansible.builtin.command: "rdqmadm -c"
       become: true
       become_user: rdqmadmin
 
     - name: Run crtmqm on main secondary nodes
-      command: "crtmqm -sxs -rr p -rl 10.0.183.110,10.0.202.217,10.0.216.112 -ri 10.1.184.124,10.1.195.110,10.1.223.94 -rp 7004 -fs 3 QMHADR3"
+      ansible.builtin.command: "crtmqm -sxs -rr p -rl 10.0.183.110,10.0.202.217,10.0.216.112 -ri 10.1.184.124,10.1.195.110,10.1.223.94 -rp 7004 -fs 3 QMHADR3"
       when: inventory_hostname == groups["rdqm"][0] or inventory_hostname == groups["rdqm"][1]
       become: true
       become_user: rdqmadmin
 
     - name: Run crtmqm on main primary node
-      command: "crtmqm -sx -rr p -rl 10.0.183.110,10.0.202.217,10.0.216.112 -ri 10.1.184.124,10.1.195.110,10.1.223.94 -rp 7004 -fs 3 QMHADR3"
+      ansible.builtin.command: "crtmqm -sx -rr p -rl 10.0.183.110,10.0.202.217,10.0.216.112 -ri 10.1.184.124,10.1.195.110,10.1.223.94 -rp 7004 -fs 3 QMHADR3"
       when: inventory_hostname == groups["rdqm"][2]
       become: true
       become_user: rdqmadmin
 
     - name: Run crtmqm on dr secondary node
-      command: "crtmqm -sxs -rr s -ri 10.0.183.110,10.0.202.217,10.0.216.112 -rl 10.1.184.124,10.1.195.110,10.1.223.94 -rp 7004 -fs 3 QMHADR3"
+      ansible.builtin.command: "crtmqm -sxs -rr s -ri 10.0.183.110,10.0.202.217,10.0.216.112 -rl 10.1.184.124,10.1.195.110,10.1.223.94 -rp 7004 -fs 3 QMHADR3"
       when: inventory_hostname == groups["dr"][0] or inventory_hostname == groups["dr"][1]
       become: true
       become_user: rdqmadmin
-       
+
     - name: Run crtmqm on dr primary node
-      command: "crtmqm -sx -rr s -ri 10.0.183.110,10.0.202.217,10.0.216.112 -rl 10.1.184.124,10.1.195.110,10.1.223.94 -rp 7004 -fs 3 QMHADR3"
+      ansible.builtin.command: "crtmqm -sx -rr s -ri 10.0.183.110,10.0.202.217,10.0.216.112 -rl 10.1.184.124,10.1.195.110,10.1.223.94 -rp 7004 -fs 3 QMHADR3"
       when: inventory_hostname == groups["dr"][2]
       become: true
-      become_user: rdqmadmin    
-
+      become_user: rdqmadmin
