@@ -24,10 +24,6 @@
 
 - name: create yum repo without gpg key
   block: 
-    - name: copy gpg key
-      copy:
-        src: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
-        dest: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
     - name: create local yum repo for MQ Server
       yum_repository:
           name: "IBM-MQ-{{ mq_release }}-x86_64"
