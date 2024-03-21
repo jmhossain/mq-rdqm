@@ -1,7 +1,7 @@
 ---
 # tasks file for pacemaker
 - name: Install Pacemaker Pre-requisites
-  ansible.builtin.ansible.builtin.yum:
+  ansible.builtin.yum:
     name:
       - libxslt
       - net-snmp-libs
