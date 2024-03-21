@@ -23,23 +23,22 @@
       file:
         path: "{{ base_dir }}/mqrdqm"
         state: directory
-    - name: Install unzip
-      ansible.builtin.yum:
-        name: unzip
-        state: present
-      become: true
     - name: Unarchive the MQ Server image
       unarchive:
         src: "{{ mq_server_image }}"
         dest: "{{ base_dir }}/mqrdqm"
         remote_src: yes
     - ansible.builtin.include_role:
+        name: mqm-user
+    - ansible.builtin.include_role:
         name: drbd
+    - ansible.builtin.include_role:
+        name: pacemaker
     - ansible.builtin.include_role:
         name: mq
     - ansible.builtin.include_role:
-        name: system-config
+        name: rdqm-cluster
     - ansible.builtin.include_role:
-        name: ha-config
+        name: rdqm-network
 
         

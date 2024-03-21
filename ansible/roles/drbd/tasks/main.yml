@@ -60,8 +60,3 @@
   command: semanage permissive -a drbd_t
   become: true
 
-- name: Create drbdpool volume group
-  lvg:
-    vg: drbdpool
-    pvs: "{{ DRBD_device }}"
-  become: true

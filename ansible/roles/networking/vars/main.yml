@@ -1,3 +1,0 @@
----
-# vars file for role
-rdqmadmin_password: "<encrypted password for rdqmadmin user>"

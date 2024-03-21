@@ -3,5 +3,5 @@
     when: ansible_distribution != "RedHat"
 
   - fail:
-      msg: "Major Version must be 9 or 8"
-    when: ansible_distribution_major_version != "9" and ansible_distribution_major_version != "8"
+      msg: "Major Version must be 7, 8 or 9"
+    when: ansible_distribution_major_version != "7" and ansible_distribution_major_version != "8" and ansible_distribution_major_version != "9"

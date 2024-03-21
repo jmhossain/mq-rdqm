@@ -44,79 +44,79 @@
   register: node_3_key
 
 - name: Set mqm authorized_keys on node 1
-  when: inventory_hostname == groups['rdqm'][0]
   authorized_key:
     user: mqm
     key: "{{ mqm_2_key }}\n{{ mqm_3_key }}"
     exclusive: true
+  when: inventory_hostname == groups['rdqm'][0]
 
 - name: Set mqm authorized_keys on node 2
-  when: inventory_hostname == groups['rdqm'][1]
   authorized_key:
     user: mqm
     key: "{{ mqm_1_key }}\n{{ mqm_3_key }}"
     exclusive: true
+  when: inventory_hostname == groups['rdqm'][1]
 
 - name: Set mqm authorized_keys on node 3
-  when: inventory_hostname == groups['rdqm'][2]
   authorized_key:
     user: mqm
     key: "{{ mqm_1_key }}\n{{ mqm_2_key }}"
     exclusive: true
+  when: inventory_hostname == groups['rdqm'][2]
 
 - name: Allow mqm to ssh from node 1 to node 2
-  when: inventory_hostname == groups['rdqm'][0]
-  become: true
-  become_user: mqm
-  delegate_to: "{{ groups['rdqm'][0] }}"
   ansible.builtin.known_hosts:
     name: "{{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
     key: "{{ node_2_key.stdout }}"
+  become: true
+  become_user: mqm
+  when: inventory_hostname == groups['rdqm'][0]
+  delegate_to: "{{ groups['rdqm'][0] }}"
 
 - name: Allow mqm to ssh from node 1 to node 3
-  when: inventory_hostname == groups['rdqm'][0]
-  become: true
-  become_user: mqm
-  delegate_to: "{{ groups['rdqm'][0] }}"
   ansible.builtin.known_hosts:
     name: "{{ hostvars[groups['rdqm'][2]].rdqm_ha_replication }}"
     key: "{{ node_3_key.stdout }}"
+  become: true
+  become_user: mqm
+  when: inventory_hostname == groups['rdqm'][0]
+  delegate_to: "{{ groups['rdqm'][0] }}"
 
 - name: Allow mqm to ssh from node 2 to node 1
-  when: inventory_hostname == groups['rdqm'][1]
-  become: true
-  become_user: mqm
-  delegate_to: "{{ groups['rdqm'][1] }}"
   ansible.builtin.known_hosts:
     name: "{{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
     key: "{{ node_1_key.stdout }}"
-
-- name: Allow mqm to ssh from node 2 to node 3
-  when: inventory_hostname == groups['rdqm'][1]
   become: true
   become_user: mqm
+  when: inventory_hostname == groups['rdqm'][1]
   delegate_to: "{{ groups['rdqm'][1] }}"
+
+- name: Allow mqm to ssh from node 2 to node 3
   ansible.builtin.known_hosts:
     name: "{{ hostvars[groups['rdqm'][2]].rdqm_ha_replication }}"
     key: "{{ node_3_key.stdout }}"
-
-- name: Allow mqm to ssh from node 3 to node 1
-  when: inventory_hostname == groups['rdqm'][2]
   become: true
   become_user: mqm
-  delegate_to: "{{ groups['rdqm'][2] }}"
+  when: inventory_hostname == groups['rdqm'][1]
+  delegate_to: "{{ groups['rdqm'][1] }}"
+
+- name: Allow mqm to ssh from node 3 to node 1
   ansible.builtin.known_hosts:
     name: "{{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
     key: "{{ node_1_key.stdout }}"
-
-- name: Allow mqm to ssh from node 3 to node 2
-  when: inventory_hostname == groups['rdqm'][2]
   become: true
   become_user: mqm
+  when: inventory_hostname == groups['rdqm'][2]
   delegate_to: "{{ groups['rdqm'][2] }}"
+
+- name: Allow mqm to ssh from node 3 to node 2
   ansible.builtin.known_hosts:
     name: "{{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
     key: "{{ node_2_key.stdout }}"
+  become: true
+  become_user: mqm
+  when: inventory_hostname == groups['rdqm'][2]
+  delegate_to: "{{ groups['rdqm'][2] }}"
 
 - name: Delete password for mqm
   command: passwd -d mqm
@@ -124,18 +124,3 @@
 - name: Lock password for mqm
   command: passwd -l mqm
 
-- name: Update rdqm.ini on primary nodes
-  ansible.builtin.template:
-    src: rdqm.ini.j2
-    dest: /var/mqm/rdqm.ini
-  vars:
-    Name1: "{{ hostvars[groups['rdqm'][0]].inventory_hostname }}"
-    Name2: "{{ hostvars[groups['rdqm'][1]].inventory_hostname }}"
-    Name3: "{{ hostvars[groups['rdqm'][2]].inventory_hostname }}"
-    IP1: "{{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
-    IP2: "{{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
-    IP3: "{{ hostvars[groups['rdqm'][2]].rdqm_ha_replication }}"
-  become: true
-  become_user: rdqmadmin
-  when: inventory_hostname == groups["rdqm"][0] and mqm_user_ssh is true
-  

@@ -5,7 +5,7 @@
     gid: "{{ mqm_gid }}"
     name: mqm
   become: true
-  when: mqm_user_ssh is true
+  when: mqm_configure is true or mqm_ssh is true
 
 - name: Create mqm user
   user:
@@ -16,4 +16,13 @@
     home: "{{ mqm_home }}"
     generate_ssh_key: yes
   become: true
-  when: mqm_user_ssh is true
+  when: mqm_configure is true or mqm_ssh is true
+
+- name: Include ssh task
+  ansible.builtin.include_tasks: ssh.yml
+  when: mqm_ssh is true
+
+- name: Include ssh task
+  ansible.builtin.include_tasks: ssh-dr.yml
+  when: mqm_ssh is true
+

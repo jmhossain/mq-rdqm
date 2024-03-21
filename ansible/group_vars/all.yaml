@@ -4,4 +4,4 @@ mq_server_image: "{{ base_dir }}/{{ mq_release }}.0-IBM-MQ-Advanced-for-Develope
 # mq_client_image: "{{ base_dir }}/{{ mq_release }}.0-IBM-MQC-LinuxX64.tar.gz"
 mqm_home: "/var/mqm"
 gpg_check: false
-mqm_user_ssh: false
+mqm_ssh: false
