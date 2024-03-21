@@ -1,104 +1,69 @@
-- name: Create sudoers file for mqm
-  copy:
-    dest: /etc/sudoers.d/mqm
-    content: |
-      mqm ALL=(root) NOPASSWD: /opt/mqm/bin/crtmqm, /opt/mqm/bin/dltmqm, /opt/mqm/bin/rdqmadm, /opt/mqm/bin/rdqmstatus, /opt/mqm/bin/rdqmdr
-  become: true
+- name: Check if firewalld is running
+  command: "systemctl is-active firewalld"
+  register: firewalld_active
+  failed_when: firewalld_active.rc > 3
 
-- name: Create rdqmadmin account
-  user:
-    name: rdqmadmin
-    group: mqm
-    groups: haclient
-    password: "{{ rdqmadmin_password }}"
+- name: Configure firewall for RDQM
+  command: /opt/mqm/samp/rdqm/firewalld/configure.sh
+  when: firewalld_active.rc == 0
   become: true
-
-- name: Update rdqm.ini on primary nodes
-  template:
-    src: rdqm.ini.j2
-    dest: /var/mqm/rdqm.ini
-  vars:
-    Name1: "{{ hostvars[groups['rdqm'][0]].inventory_hostname }}"
-    Name2: "{{ hostvars[groups['rdqm'][1]].inventory_hostname }}"
-    Name3: "{{ hostvars[groups['rdqm'][2]].inventory_hostname }}"
-    IP1: "{{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
-    IP2: "{{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
-    IP3: "{{ hostvars[groups['rdqm'][2]].rdqm_ha_replication }}"
-  become: true
-  become_user: rdqmadmin
-  when: inventory_hostname in groups["rdqm"]
-
-- name: Update rdqm.ini on dr nodes 
-  template:
-    src: rdqmdr.ini.j2
-    dest: /var/mqm/rdqm.ini
-  vars:
-    Name1: "{{ hostvars[groups['dr'][0]].inventory_hostname }}"
-    Name2: "{{ hostvars[groups['dr'][1]].inventory_hostname }}"
-    Name3: "{{ hostvars[groups['dr'][2]].inventory_hostname }}"
-    IP1: "{{ hostvars[groups['dr'][0]].rdqm_ha_replication }}"
-    IP2: "{{ hostvars[groups['dr'][1]].rdqm_ha_replication }}"
-    IP3: "{{ hostvars[groups['dr'][2]].rdqm_ha_replication }}"
-  become: true
-  become_user: rdqmadmin
-  when: inventory_hostname in groups["dr"]
 
 - name: ifcfg eth1 vm1
-  template:
+  ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
   vars:
     IP1: "{{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
-  when: inventory_hostname == groups["rdqm"][0] 
+  when: inventory_hostname == groups["rdqm"][0]
   become: true
 
 - name: ifcfg eth1 vm2
-  template:
+  ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
   vars:
     IP1: "{{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
-  when: inventory_hostname == groups["rdqm"][1] 
+  when: inventory_hostname == groups["rdqm"][1]
   become: true
 
 - name: ifcfg eth1 vm3
-  template:
+  ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
   vars:
     IP1: "{{ hostvars[groups['rdqm'][2]].rdqm_ha_replication }}"
-  when: inventory_hostname == groups["rdqm"][2] 
+  when: inventory_hostname == groups["rdqm"][2]
   become: true
 
 - name: ifcfg eth1 dr vm1
-  template:
+  ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
   vars:
     IP1: "{{ hostvars[groups['dr'][0]].rdqm_ha_replication }}"
-  when: inventory_hostname == groups["dr"][0] 
+  when: inventory_hostname == groups["dr"][0]
   become: true
 
 - name: ifcfg eth1 dr vm2
-  template:
+  ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
   vars:
     IP1: "{{ hostvars[groups['dr'][1]].rdqm_ha_replication }}"
-  when: inventory_hostname == groups["dr"][1] 
+  when: inventory_hostname == groups["dr"][1]
   become: true
 
 - name: ifcfg eth1 dr vm3
-  template:
+  ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
   vars:
     IP1: "{{ hostvars[groups['dr'][2]].rdqm_ha_replication }}"
-  when: inventory_hostname == groups["dr"][2] 
+  when: inventory_hostname == groups["dr"][2]
   become: true
 
 - name: route eth1 vm1
-  template:
+  ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
   vars:
@@ -112,7 +77,7 @@
   become: true
 
 - name: route eth1 vm2
-  template:
+  ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
   vars:
@@ -126,7 +91,7 @@
   become: true
 
 - name: route eth1 vm3
-  template:
+  ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
   vars:
@@ -140,7 +105,7 @@
   become: true
 
 - name: route eth1 dr vm1
-  template:
+  ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
   vars:
@@ -154,7 +119,7 @@
   become: true
 
 - name: route eth1 dr vm2
-  template:
+  ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
   vars:
@@ -168,7 +133,7 @@
   become: true
 
 - name: route eth1 dr vm3
-  template:
+  ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
   vars:

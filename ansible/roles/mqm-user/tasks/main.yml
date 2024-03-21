@@ -1,0 +1,19 @@
+---
+# tasks file for mqm-user
+- name: Create mqm group
+  group:
+    gid: "{{ mqm_gid }}"
+    name: mqm
+  become: true
+  when: mqm_user_ssh is true
+
+- name: Create mqm user
+  user:
+    uid: "{{ mqm_uid }}"
+    name: mqm
+    group: mqm
+    password: "{{ mqm_password }}"
+    home: "{{ mqm_home }}"
+    generate_ssh_key: yes
+  become: true
+  when: mqm_user_ssh is true

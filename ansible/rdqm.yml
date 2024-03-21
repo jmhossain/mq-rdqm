@@ -1,63 +1,45 @@
 ---
 - hosts: all
   strategy: free
-
+  group_vars:
+    - all.yaml
+    - drbd.yaml
+    - mq.yaml
+    - mqm-user.yaml
+    - networking.yaml
+    - rdqm.yaml
   tasks:
-    - assert:
+    - ansible.builtin.assert:
         that:
           - groups['rdqm'] | length == 3
           - groups['dr'] | length == 3
-
-    - include_role:
+    - ansible.builtin.include_role:
         name: os-check
-
-#    - name: Create mqm group
-#      group:
-#        gid: "{{ mqm_gid }}"
-#        name: mqm
-#      become: true
-
-#    - name: Create mqm user
-#      user:
-#        uid: "{{ mqm_uid }}"
-#        name: mqm
-#        group: mqm
-#        password: "{{ mqm_password }}"
-#        home: "{{ mqm_home }}"
-#        generate_ssh_key: yes
-#     become: true
-
     - name: Copy MQ Server image
       copy:
         src: "{{ mq_server_image }}"
         dest: "{{ mq_server_image }}"
-
     - name: Create directory for MQ image
       file:
         path: "{{ base_dir }}/mqrdqm"
         state: directory
-
     - name: Install unzip
-      yum:
+      ansible.builtin.yum:
         name: unzip
         state: present
       become: true
-
     - name: Unarchive the MQ Server image
       unarchive:
         src: "{{ mq_server_image }}"
         dest: "{{ base_dir }}/mqrdqm"
         remote_src: yes
-
-    - include_role:
+    - ansible.builtin.include_role:
         name: drbd
-
-    - include_role:
-        name: mq-install
-
-    - include_role:
+    - ansible.builtin.include_role:
+        name: mq
+    - ansible.builtin.include_role:
         name: system-config
-
-    - include_role:
+    - ansible.builtin.include_role:
         name: ha-config
 
+        

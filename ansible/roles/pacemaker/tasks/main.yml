@@ -1,5 +1,5 @@
 ---
 # tasks file for pacemaker
 - name: configure pacemaker
-  include_tasks: "rhel-{{ ansible_distribution_major_version }}.yml"
+  ansible.builtin.include_tasks: "rhel-{{ ansible_distribution_major_version }}.yml"
   # when: ansible_distribution_major_version == "7"

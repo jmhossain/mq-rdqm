@@ -1,0 +1,69 @@
+---
+# tasks file for mq-install
+- name: create yum repo with gpg key
+  block: 
+    - name: copy gpg key
+      copy:
+        src: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
+        dest: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
+    - name: create local yum repo for MQ Server
+      yum_repository:
+          name: "IBM-MQ-{{ mq_release }}-x86_64"
+          description: "IBM MQ {{ mq_release }} x86_64"
+          baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
+          enabled: true
+          gpgcheck: true
+          gpgkey: "file://{{ mq_gpg_location }}/ibm_mq_public.pgp"
+        become: true
+    - name: Import a key from a url
+      ansible.builtin.rpm_key:
+        state: present
+        key: "file://{{ mq_gpg_location }}/ibm_mq_public.pgp"
+      become: true
+  when: gpg_check is true
+
+- name: create yum repo without gpg key
+  block: 
+    - name: copy gpg key
+      copy:
+        src: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
+        dest: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
+    - name: create local yum repo for MQ Server
+      yum_repository:
+          name: "IBM-MQ-{{ mq_release }}-x86_64"
+          description: "IBM MQ {{ mq_release }} x86_64"
+          baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
+          enabled: true
+          gpgcheck: false
+        become: true
+  when: gpg_check is false
+ 
+- name: Run mq license script
+  command: "{{ base_dir }}/mqrdqm/MQServer/mqlicense.sh -accept"
+  become: true
+
+- name: Install MQ Server and Pacemaker
+  ansible.builtin.yum:
+    name: MQSeries*
+    state: latest
+  become: true
+
+- name: Set MQ installation as the primary installation
+  command: /opt/mqm/bin/setmqinst -i -p /opt/mqm
+  become: true
+
+- name: find rdqm rpm files and register the result 
+  find:
+    paths: "{{ base_dir }}/mqrdqm/MQServer/Advanced/RDQM"
+    patterns: "*.rpm"
+  register: rdqm_rpm
+
+- ansible.builtin.set_fact:
+    rdqm_list: "{{ rdqm_rpm.files | map(attribute='path') | list}}"
+
+- name: install rpm files using rpm_list
+  ansible.builtin.yum:
+    name: "{{rdqm_list}}"
+    state: present
+    disable_gpg_check: true
+  become: true
