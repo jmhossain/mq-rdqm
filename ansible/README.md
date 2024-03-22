@@ -4,34 +4,25 @@ This directory contains two playbooks relating to RDQM:
 
 1. an ansible playbook `rdqm.yml` to configure three systems so that they are ready to become an RDQM HA Group
 
-2. an ansible playbook `client.yml` to configure one or more systems as MQ client systems to use an RDQM HA queue manager on the HA Group
+2. an ansible playbook `createqm.yml` to create a sample queue manager
 
-The systems must be running either RHEL 7 or RHEL 8.
+The systems must be running either RHEL 7, RHEL 8 or RHEL 9.
 
-You will need to update three files before using the rdqm.yml playbook to configure RHEL 7 systems:
+You will need to update a set of variables files in the group_vars folder before using the rdqm.yml playbook to configure RHEL systems.
 
-1. hosts.ini
-2. group_vars/all/vars.yaml
-3. roles/rdqm-el/vars/main.yml
+Before running either playbook, you will need to update the hosts file to reflect the systems you wish to configure, both RDQM and DR.
 
-If you are configuring RHEL 8 systems then you will need to update an additional file:
-
-1. roles/rdqm-el8/vars/main.yml
-
-## hosts.ini
-
-Before running either playbook, you will need to update the hosts.ini file to reflect the systems
-you wish to configure, both RDQM and client.
-
-There are two groups of hosts in the hosts.ini file:
+There are two groups of hosts in the hosts file:
 
 1. rdqm
-2. client
+2. dr
 
-There must be exactly three hosts in the rdqm group for the rdqm playbook to run. For each host, two IP addresses must be specified:
+There must be exactly three hosts in the rdqm group and optionally exactly three hosts in the dr group for the rdqm playbook to run. For each host, at least one IP address must be specified:
 
 1. ansible_host must be the address which ansible can use to connect to the host
-2. rdqm_ha_replication must be the address of the host that is to be used in the generated rdqm.ini file
+2. rdqm_ha_gateway will be used as the internet gateway for static route communication between the RDQM hosts
+3. [optional] rdqm_ha_replication must be the address of the host that is to be used for HA replication. If omitted, ansible_host will be used for replication
+4. [optional] rdqm_dr_replication must be the address of the host that is to be used for DR replication. If omitted, ansible_host or rdqm_ha_replication will be used for replication 
 
 This approach allows for two different IP addresses to be specified for each host. In the future, I would like to support specifying one or two additional RDQM IP addresses to be specified so that all of the options for the rdqm.ini file can be supported, but for the moment the generated rdqm.ini file will only have one IP address per host. If you want to specify more, you can edit the generated rdqm.ini file before configuring the RDQM HA Group.
 
@@ -100,7 +91,7 @@ The ID of the standard RHEL 8 AppStream repository.
 
 ## RDQM Playbook
 
-Once the `hosts.ini` file has been updated and any variables, the RDQM playbook can be run with the ansible.builtin.command:
+Once the `hosts` file has been updated and any variables, the RDQM playbook can be run with the ansible.builtin.command:
 
 ```bash
 ansible-playbook -l rdqm rdqm.yml
@@ -192,7 +183,7 @@ HA status:                              Normal
 
 ## Client Playbook
 
-Once the `hosts.ini` file has been updated and any variables, the client playbook can be run with the ansible.builtin.command:
+Once the `hosts` file has been updated and any variables, the client playbook can be run with the ansible.builtin.command:
 
 ```bash
 ansible-playbook -l client client.yml
