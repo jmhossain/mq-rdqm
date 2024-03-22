@@ -1,20 +1,20 @@
 ---
 # tasks file for mqm-user
 - name: Create mqm group
-  group:
+  ansible.builtin.group:
     gid: "{{ mqm_gid }}"
     name: mqm
   become: true
   when: mqm_configure is true or mqm_ssh is true
 
 - name: Create mqm user
-  user:
+  ansible.builtin.user:
     uid: "{{ mqm_uid }}"
     name: mqm
-    group: mqm
+    ansible.builtin.group: mqm
     password: "{{ mqm_password }}"
     home: "{{ mqm_home }}"
-    generate_ssh_key: yes
+    generate_ssh_key: true
   become: true
   when: mqm_configure is true or mqm_ssh is true
 
@@ -25,4 +25,3 @@
 - name: Include ssh task
   ansible.builtin.include_tasks: ssh-dr.yml
   when: mqm_ssh is true
-

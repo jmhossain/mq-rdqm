@@ -17,16 +17,17 @@
     state: present
   become: true
 
-- name: find pacemaker rpm files and register the result
-  find:
+- name: Find pacemaker rpm files and register the result
+  ansible.builtin.find:
     paths: "{{ base_dir }}/mqrdqm/MQServer/Advanced/RDQM/PreReqs/el7/pacemaker-1"
     patterns: "*.rpm"
   register: pacemaker_rpms
 
-- ansible.builtin.set_fact:
-    pacemaker_list: "{{ pacemaker_rpms.files | map(attribute='path') | list}}"
+- name: Set pacemaker_list
+  ansible.builtin.set_fact:
+    pacemaker_list: "{{ pacemaker_rpms.files | map(attribute='path') | list }}"
 
-- name: install rpm files using rpm_list
+- name: Install rpm files using rpm_list
   ansible.builtin.yum:
     name: "{{ pacemaker_list }}"
     state: present

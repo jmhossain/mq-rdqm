@@ -26,4 +26,3 @@
 - name: Configure SELinux for DRBD
   ansible.builtin.command: semanage permissive -a drbd_t
   become: true
-

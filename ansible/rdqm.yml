@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Rdqm
+  hosts: all
   strategy: free
   vars_files:
     - ./group_vars/all.yaml
@@ -8,39 +9,45 @@
     - ./group_vars/mq.yaml
     - ./group_vars/rdqm.yaml
   tasks:
-    - ansible.builtin.assert:
+    - name: Assert
+      ansible.builtin.assert:
         that:
           - groups['rdqm'] | length == 3
           - groups['dr'] | length == 3
-    - ansible.builtin.include_role:
+    - name: Include role
+      ansible.builtin.include_role:
         name: os-check
     - name: Copy MQ Server image
-      copy:
+      ansible.builtin.copy:
         src: "{{ mq_server_image }}"
         dest: "{{ mq_server_image }}"
     - name: Create directory for MQ image
-      file:
+      ansible.builtin.file:
         path: "{{ base_dir }}/mqrdqm"
         state: directory
     - name: Unarchive the MQ Server image
-      unarchive:
+      ansible.builtin.unarchive:
         src: "{{ mq_server_image }}"
         dest: "{{ base_dir }}/mqrdqm"
         remote_src: yes
-    - ansible.builtin.include_role:
+    - name: Include role
+      ansible.builtin.include_role:
         name: mqm-user
-    - ansible.builtin.include_role:
+    - name: Include role
+      ansible.builtin.include_role:
         name: drbd
-    - ansible.builtin.include_role:
+    - name: Include role
+      ansible.builtin.include_role:
         name: pacemaker
-    - ansible.builtin.include_role:
+    - name: Include role
+      ansible.builtin.include_role:
         name: mq
-    - ansible.builtin.include_role:
+    - name: Include role
+      ansible.builtin.include_role:
         name: rdqm
     - name: Create sudoers file for mqm
-      copy:
+      ansible.builtin.copy:
         dest: /etc/sudoers.d/mqm
         content: |
-                  mqm ALL=(root) NOPASSWD: /opt/mqm/bin/crtmqm, /opt/mqm/bin/dltmqm, /opt/mqm/bin/rdqmadm, /opt/mqm/bin/rdqmstatus, /opt/mqm/bin/rdqmdr
+          mqm ALL=(root) NOPASSWD: /opt/mqm/bin/crtmqm, /opt/mqm/bin/dltmqm, /opt/mqm/bin/rdqmadm, /opt/mqm/bin/rdqmstatus, /opt/mqm/bin/rdqmdr
       become: true
-

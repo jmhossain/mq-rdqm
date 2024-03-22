@@ -1,13 +1,13 @@
 ---
 # tasks file for mq-install
-- name: create yum repo with gpg key
+- name: Create yum repo with gpg key
   block:
-    - name: copy gpg key
-      copy:
+    - name: Copy gpg key
+      ansible.builtin.copy:
         src: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
         dest: "{{ mq_gpg_location }}/ibm_mq_public.pgp"
-    - name: create local yum repo for MQ Server
-      yum_repository:
+    - name: Create local yum repo for MQ Server
+      ansible.builtin.yum_repository:
         name: "IBM-MQ-{{ mq_release }}-x86_64"
         description: "IBM MQ {{ mq_release }} x86_64"
         baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
@@ -22,17 +22,17 @@
       become: true
   when: gpg_check is true
 
-- name: create yum repo without gpg key
+- name: Create yum repo without gpg key
+  when: gpg_check is false
   block:
-    - name: create local yum repo for MQ Server
-      yum_repository:
+    - name: Create local yum repo for MQ Server
+      ansible.builtin.yum_repository:
         name: "IBM-MQ-{{ mq_release }}-x86_64"
         description: "IBM MQ {{ mq_release }} x86_64"
         baseurl: "file://{{ base_dir }}/mqrdqm/MQServer"
         enabled: true
         gpgcheck: false
       become: true
-  when: gpg_check is false
 
 - name: Run mq license script
   ansible.builtin.command: "{{ base_dir }}/mqrdqm/MQServer/mqlicense.sh -accept"

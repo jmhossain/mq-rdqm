@@ -1,7 +1,7 @@
 ---
 # tasks file for rdqm
 - name: Create rdqmadmin account
-  user:
+  ansible.builtin.user:
     name: "{{ rdqm_admin_user }}"
     group: mqm
     groups: haclient
@@ -37,7 +37,7 @@
   become: true
   become_user: "{{ rdqm_admin_user }}"
   when: inventory_hostname == groups["rdqm"][0] and mqm_ssh is true
-  
+
 - name: Update rdqm.ini on dr nodes
   ansible.builtin.template:
     src: rdqmdr.ini.j2

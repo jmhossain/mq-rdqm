@@ -8,7 +8,7 @@
   when: firewalld_active.rc == 0
   become: true
 
-- name: ifcfg eth1 vm1
+- name: Ifcfg eth1 vm1
   ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
@@ -17,7 +17,7 @@
   when: inventory_hostname == groups["rdqm"][0]
   become: true
 
-- name: ifcfg eth1 vm2
+- name: Ifcfg eth1 vm2
   ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
@@ -26,7 +26,7 @@
   when: inventory_hostname == groups["rdqm"][1]
   become: true
 
-- name: ifcfg eth1 vm3
+- name: Ifcfg eth1 vm3
   ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
@@ -35,7 +35,7 @@
   when: inventory_hostname == groups["rdqm"][2]
   become: true
 
-- name: ifcfg eth1 dr vm1
+- name: Ifcfg eth1 dr vm1
   ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
@@ -44,7 +44,7 @@
   when: inventory_hostname == groups["dr"][0]
   become: true
 
-- name: ifcfg eth1 dr vm2
+- name: Ifcfg eth1 dr vm2
   ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
@@ -53,7 +53,7 @@
   when: inventory_hostname == groups["dr"][1]
   become: true
 
-- name: ifcfg eth1 dr vm3
+- name: Ifcfg eth1 dr vm3
   ansible.builtin.template:
     src: "ifcfg-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
@@ -62,7 +62,7 @@
   when: inventory_hostname == groups["dr"][2]
   become: true
 
-- name: route eth1 vm1
+- name: Route eth1 vm1
   ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
@@ -76,7 +76,7 @@
   when: inventory_hostname == groups["rdqm"][0]
   become: true
 
-- name: route eth1 vm2
+- name: Route eth1 vm2
   ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
@@ -90,7 +90,7 @@
   when: inventory_hostname == groups["rdqm"][1]
   become: true
 
-- name: route eth1 vm3
+- name: Route eth1 vm3
   ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
@@ -104,7 +104,7 @@
   when: inventory_hostname == groups["rdqm"][2]
   become: true
 
-- name: route eth1 dr vm1
+- name: Route eth1 dr vm1
   ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
@@ -118,7 +118,7 @@
   when: inventory_hostname == groups["dr"][0]
   become: true
 
-- name: route eth1 dr vm2
+- name: Route eth1 dr vm2
   ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
@@ -132,7 +132,7 @@
   when: inventory_hostname == groups["dr"][1]
   become: true
 
-- name: route eth1 dr vm3
+- name: Route eth1 dr vm3
   ansible.builtin.template:
     src: "route-eth1.j2"
     dest: "/etc/sysconfig/network-scripts/route-eth1"
