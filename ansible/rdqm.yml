@@ -29,7 +29,7 @@
       ansible.builtin.unarchive:
         src: "{{ mq_server_image }}"
         dest: "{{ base_dir }}/mqrdqm"
-        remote_src: yes
+        remote_src: true
     - name: Include role
       ansible.builtin.include_role:
         name: mqm-user
