@@ -71,7 +71,6 @@
   become: true
   become_user: mqm
   when: inventory_hostname == groups['rdqm'][0]
-  delegate_to: "{{ groups['rdqm'][0] }}"
 
 - name: Allow mqm to ssh from node 1 to node 3
   ansible.builtin.known_hosts:
@@ -80,7 +79,6 @@
   become: true
   become_user: mqm
   when: inventory_hostname == groups['rdqm'][0]
-  delegate_to: "{{ groups['rdqm'][0] }}"
 
 - name: Allow mqm to ssh from node 2 to node 1
   ansible.builtin.known_hosts:
@@ -89,7 +87,6 @@
   become: true
   become_user: mqm
   when: inventory_hostname == groups['rdqm'][1]
-  delegate_to: "{{ groups['rdqm'][1] }}"
 
 - name: Allow mqm to ssh from node 2 to node 3
   ansible.builtin.known_hosts:
@@ -98,7 +95,6 @@
   become: true
   become_user: mqm
   when: inventory_hostname == groups['rdqm'][1]
-  delegate_to: "{{ groups['rdqm'][1] }}"
 
 - name: Allow mqm to ssh from node 3 to node 1
   ansible.builtin.known_hosts:
@@ -107,7 +103,6 @@
   become: true
   become_user: mqm
   when: inventory_hostname == groups['rdqm'][2]
-  delegate_to: "{{ groups['rdqm'][2] }}"
 
 - name: Allow mqm to ssh from node 3 to node 2
   ansible.builtin.known_hosts:
@@ -116,7 +111,6 @@
   become: true
   become_user: mqm
   when: inventory_hostname == groups['rdqm'][2]
-  delegate_to: "{{ groups['rdqm'][2] }}"
 
 - name: Delete password for mqm
   ansible.builtin.command: passwd -d mqm
