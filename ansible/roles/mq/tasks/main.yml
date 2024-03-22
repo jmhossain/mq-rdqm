@@ -1,6 +1,7 @@
 ---
 # tasks file for mq-install
 - name: Create yum repo with gpg key
+  when: gpg_check is true
   block:
     - name: Copy gpg key
       ansible.builtin.copy:
@@ -20,7 +21,6 @@
         state: present
         key: "file://{{ mq_gpg_location }}/ibm_mq_public.pgp"
       become: true
-  when: gpg_check is true
 
 - name: Create yum repo without gpg key
   when: gpg_check is false

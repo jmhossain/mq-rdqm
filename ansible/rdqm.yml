@@ -21,10 +21,12 @@
       ansible.builtin.copy:
         src: "{{ mq_server_image }}"
         dest: "{{ mq_server_image }}"
+        mode: '0644'
     - name: Create directory for MQ image
       ansible.builtin.file:
         path: "{{ base_dir }}/mqrdqm"
         state: directory
+        mode: '0755'
     - name: Unarchive the MQ Server image
       ansible.builtin.unarchive:
         src: "{{ mq_server_image }}"

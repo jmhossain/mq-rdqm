@@ -2,3 +2,4 @@ mqm_configure: false
 mqm_gid: 1001
 mqm_uid: 1001
 mqm_password: "passw0rd"
+mqm_ssh_key: "{{ mqm_ssh_key }}"

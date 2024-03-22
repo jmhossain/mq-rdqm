@@ -1,35 +1,35 @@
 - name: Fetch mqm public key
   ansible.builtin.fetch:
-    src: "{{ mqm_home }}/.ssh/id_rsa.pub"
+    src: "{{ mqm_home }}/.ssh/{{ mqm_ssh_key }}"
     dest: /tmp/rdqm_mqm_keys
   when: inventory_hostname in groups["rdqm"]
 
 - name: Wait for mqm key 1
   ansible.builtin.wait_for:
-    path: "/tmp/rdqm_mqm_keys/{{ hostvars[groups['rdqm'][0]].inventory_hostname }}{{ mqm_home }}/.ssh/id_rsa.pub"
+    path: "/tmp/rdqm_mqm_keys/{{ hostvars[groups['rdqm'][0]].inventory_hostname }}{{ mqm_home }}/.ssh/{{ mqm_ssh_key }}"
   delegate_to: localhost
 
 - name: Wait for mqm key 2
   ansible.builtin.wait_for:
-    path: "/tmp/rdqm_mqm_keys/{{ hostvars[groups['rdqm'][1]].inventory_hostname }}{{ mqm_home }}/.ssh/id_rsa.pub"
+    path: "/tmp/rdqm_mqm_keys/{{ hostvars[groups['rdqm'][1]].inventory_hostname }}{{ mqm_home }}/.ssh/{{ mqm_ssh_key }}"
   delegate_to: localhost
 
 - name: Wait for mqm key 3
   ansible.builtin.wait_for:
-    path: "/tmp/rdqm_mqm_keys/{{ hostvars[groups['rdqm'][2]].inventory_hostname }}{{ mqm_home }}/.ssh/id_rsa.pub"
+    path: "/tmp/rdqm_mqm_keys/{{ hostvars[groups['rdqm'][2]].inventory_hostname }}{{ mqm_home }}/.ssh/{{ mqm_ssh_key }}"
   delegate_to: localhost
 
 - name: Register mqm_1_key
   ansible.builtin.set_fact:
-    mqm_1_key: "{{ lookup('file', '/tmp/rdqm_mqm_keys/' + hostvars[groups['rdqm'][0]].inventory_hostname + '{{ mqm_home }}/.ssh/id_rsa.pub') }}"
+    mqm_1_key: "{{ lookup('file', '/tmp/rdqm_mqm_keys/' + hostvars[groups['rdqm'][0]].inventory_hostname + '{{ mqm_home }}/.ssh/{{ mqm_ssh_key }}') }}"
 
 - name: Register mqm_2_key
   ansible.builtin.set_fact:
-    mqm_2_key: "{{ lookup('file', '/tmp/rdqm_mqm_keys/' + hostvars[groups['rdqm'][1]].inventory_hostname + '{{ mqm_home }}/.ssh/id_rsa.pub') }}"
+    mqm_2_key: "{{ lookup('file', '/tmp/rdqm_mqm_keys/' + hostvars[groups['rdqm'][1]].inventory_hostname + '{{ mqm_home }}/.ssh/{{ mqm_ssh_key }}') }}"
 
 - name: Register mqm_3_key
   ansible.builtin.set_fact:
-    mqm_3_key: "{{ lookup('file', '/tmp/rdqm_mqm_keys/' + hostvars[groups['rdqm'][2]].inventory_hostname + '{{ mqm_home }}/.ssh/id_rsa.pub') }}"
+    mqm_3_key: "{{ lookup('file', '/tmp/rdqm_mqm_keys/' + hostvars[groups['rdqm'][2]].inventory_hostname + '{{ mqm_home }}/.ssh/{{ mqm_ssh_key }}') }}"
 
 - name: Get ssh key for node 1
   ansible.builtin.shell: "ssh-keyscan -t {{ ssh_key_type }} {{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
