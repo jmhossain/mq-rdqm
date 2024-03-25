@@ -24,40 +24,43 @@ There must be exactly three hosts in the rdqm group and optionally exactly three
 3. [optional] rdqm_ha_replication must be the address of the host that is to be used for HA replication. If omitted, ansible_host will be used for replication
 4. [optional] rdqm_dr_replication must be the address of the host that is to be used for DR replication. If omitted, ansible_host or rdqm_ha_replication will be used for replication 
 
-This approach allows for two different IP addresses to be specified for each host. In the future, I would like to support specifying one or two additional RDQM IP addresses to be specified so that all of the options for the rdqm.ini file can be supported, but for the moment the generated rdqm.ini file will only have one IP address per host. If you want to specify more, you can edit the generated rdqm.ini file before configuring the RDQM HA Group.
+Currently, this Playbook allows for two different IP addresses to be specified for each host. In the future, I would like to support specifying one or two additional RDQM IP addresses to be specified so that all of the options for the rdqm.ini file can be supported, but for the moment the generated rdqm.ini file will only have one IP address per host. If you want to specify more, you can edit the generated rdqm.ini file before configuring the RDQM HA Group.
 
 If you want to use the same IP address for both ansible and RDQM, at the moment the address has to be specified twice. I hope to remove the requirement for this in the future.
 
-There must be at least one host specified in the client group but more is allowed, and each host will be configured in the same way.
-
-## group_vars/all/vars.yaml
+## group_vars/all.yaml
 
 ### mq_release
 
 The MQ release you are installing.
 The value of this variable is used to create a directory to hold the unpacked image.
 
-### mq_client_image
+### base_dir
 
-The full path to the file containing the MQ client product to be installed.
-This file is copied to each client system and unpacked.
+The base directory in which installation files are stored.
 
 ### mq_server_image
 
 The full path to the file containing the MQ server product to be installed.
 This file is copied to each of the RDQM nodes and unpacked.
 
-### mqm_password
+### mqm_home
 
-The encrypted password used temporarily while configuring passwordless ssh for the mqm user.
+Home directory for the mqm user.
 
-### mquser_password
+### mqm_ssh
 
-The encrypted password for the mquser account on all nodes.
+Boolean for whether or not the mqm user to be allowed passwordless ssh.
 
-### rdqmadmin_password
+### gpg_check
 
-The encrypted password for the rdqmadmin account on the RDQM nodes.
+Indicate whether or not to require checking the signature of rpm packages with a gpg signing key.
+
+## group_vars/mqm-user.yaml
+
+### mqm_configure
+
+Boolean check whether to configure mqm user or to let the installation do it for you.
 
 ### mqm_gid
 
@@ -67,37 +70,51 @@ The group id to be used for the mqm group. The mqm group is created explicitly b
 
 The user id to be used for the mqm user. The mqm user is created explicitly before MQ is installed, to guarantee that the same value is used on all hosts.
 
+### mqm_password
+
+The encrypted password used temporarily while configuring passwordless ssh for the mqm user.
+
+### mqm_ssh_key
+
+SSH Key for the mqm user.
+
+## group_vars/drbd.yaml
+
 ### DRBD_device
 
 The device which should be used to create a volume group for DRBD/RDQM.
 
-## roles/rdqm-el/vars/main.yml
+## group_vars/mq.yaml
 
-### rdqm_rpm
+### mq_gpg_location
 
-The .rpm file containing the MQ RDQM package.
+Location of gpg signing key for IBM MQ.
 
-## roles/rdqm-el8/vars/main.yml
+## group_vars/rdqm.yaml
 
-The following variables are only used in the el8 role so they are defined in roles/rdqm-el8/vars/main.yml
+### rdqm_admin_user
 
-### appstream_repo_file
+The user for the rdqmadmin account on the RDQM nodes.
 
-The file that contains the definition of the standard RHEL 8 AppStream repository.
+### rdqm_admin_password
 
-### appstream_repo_id
+The encrypted password for the rdqmadmin account on the RDQM nodes.
 
-The ID of the standard RHEL 8 AppStream repository.
+### ssh_key_type
+
+The type of ssh key for the mqm user.
 
 ## RDQM Playbook
 
 Once the `hosts` file has been updated and any variables, the RDQM playbook can be run with the ansible.builtin.command:
 
 ```bash
-ansible-playbook -l rdqm rdqm.yml
+ansible-playbook -i hosts rdqm.yml
 ```
 
 ## Accept MQ license
+
+When the playbook is run on each of the RDQM hosts, the MQ license is accepted as follows:
 
 On each of the rdqm hosts, as root, run `/opt/mqm/bin/mqlicense -accept` which should produce:
 
@@ -109,7 +126,7 @@ license agreement.
 
 ## Configure RDQM HA Group
 
-On the first node, run:
+If the mqm user does not have passwordless ssh, run the following command on all nodes. If the user does have passwordless ssh, only run on the primary node of each HA group: 
 
 ```bash
 su - rdqmadmin
@@ -179,52 +196,6 @@ HA status:                              Normal
 
 Node:                                   colgrave-vsi-rdqm-eu-gb-3
 HA status:                              Normal
-```
-
-## Client Playbook
-
-Once the `hosts` file has been updated and any variables, the client playbook can be run with the ansible.builtin.command:
-
-```bash
-ansible-playbook -l client client.yml
-```
-
-### Accept MQ License
-
-The first thing to do on the client system is to accept the MQ license by running as root:
-
-```bash
-/opt/mqm/bin/mqlicense -accept
-```
-
-### Internet Access
-
-In order to be able to clone the ibm-messaging/mq-rdqm repository to get the samples, it is necessary to have Internet access from the client system(s).
-
-### Make samples
-
-Once I had a floating IP, I went to the client system and did:
-
-```bash
-su - mquser
-mkdir -p github.com/ibm-messaging
-cd github.com/ibm-messaging
-git clone https://github.com/ibm-messaging/mq-rdqm.git
-cd mq-rdqm/samples/C/linux
-make
-cd
-```
-
-The output of the make should be something like:
-
-```bash
-gcc -m64 -I /opt/mqm/inc -c ../complete.c
-gcc -m64 -I /opt/mqm/inc -c ../connection.c
-gcc -m64 -I /opt/mqm/inc -c ../globals.c
-gcc -m64 -I /opt/mqm/inc -c ../log.c
-gcc -m64 -I /opt/mqm/inc -c ../options.c
-gcc -m64 -I /opt/mqm/inc -o rdqmget ../rdqmget.c complete.o connection.o globals.o log.o options.o -L /opt/mqm/lib64 -l mqic_r -Wl,-rpath=/opt/mqm/lib64 -Wl,-rpath=/usr/lib64
-gcc -m64 -I /opt/mqm/inc -o rdqmput ../rdqmput.c complete.o connection.o globals.o log.o options.o -L /opt/mqm/lib64 -l mqic_r -Wl,-rpath=/opt/mqm/lib64 -Wl,-rpath=/usr/lib64
 ```
 
 ## Testing
