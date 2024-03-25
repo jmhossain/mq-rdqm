@@ -52,4 +52,5 @@
         dest: /etc/sudoers.d/mqm
         content: |
           mqm ALL=(root) NOPASSWD: /opt/mqm/bin/crtmqm, /opt/mqm/bin/dltmqm, /opt/mqm/bin/rdqmadm, /opt/mqm/bin/rdqmstatus, /opt/mqm/bin/rdqmdr
+        mode: "0644"
       become: true
