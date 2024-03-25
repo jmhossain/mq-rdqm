@@ -3,5 +3,5 @@ base_dir: "/tmp"
 mq_server_image: "{{ base_dir }}/{{ mq_release }}.0-IBM-MQ-Advanced-for-Developers-LinuxX64.tar.gz"
 # mq_client_image: "{{ base_dir }}/{{ mq_release }}.0-IBM-MQC-LinuxX64.tar.gz"
 mqm_home: "/var/mqm"
-gpg_check: false
 mqm_ssh: false
+gpg_check: false
