@@ -41,7 +41,7 @@
 - name: Install MQ Server and Pacemaker
   ansible.builtin.yum:
     name: MQSeries*
-    state: latest
+    state: present
   become: true
 
 - name: Set MQ installation as the primary installation

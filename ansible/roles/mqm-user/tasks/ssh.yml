@@ -32,15 +32,15 @@
     mqm_3_key: "{{ lookup('file', '/tmp/rdqm_mqm_keys/' + hostvars[groups['rdqm'][2]].inventory_hostname + '{{ mqm_home }}/.ssh/{{ mqm_ssh_key }}') }}"
 
 - name: Get ssh key for node 1
-  ansible.builtin.shell: "ssh-keyscan -t {{ ssh_key_type }} {{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
+  ansible.builtin.command: "ssh-keyscan -t {{ ssh_key_type }} {{ hostvars[groups['rdqm'][0]].rdqm_ha_replication }}"
   register: node_1_key
 
 - name: Get ssh key for node 2
-  ansible.builtin.shell: "ssh-keyscan -t {{ ssh_key_type }} {{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
+  ansible.builtin.command: "ssh-keyscan -t {{ ssh_key_type }} {{ hostvars[groups['rdqm'][1]].rdqm_ha_replication }}"
   register: node_2_key
 
 - name: Get ssh key for node 3
-  ansible.builtin.shell: "ssh-keyscan -t {{ ssh_key_type }} {{ hostvars[groups['rdqm'][2]].rdqm_ha_replication }}"
+  ansible.builtin.command: "ssh-keyscan -t {{ ssh_key_type }} {{ hostvars[groups['rdqm'][2]].rdqm_ha_replication }}"
   register: node_3_key
 
 - name: Set mqm authorized_keys on node 1

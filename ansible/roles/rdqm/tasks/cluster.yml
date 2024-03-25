@@ -12,6 +12,7 @@
   ansible.builtin.template:
     src: rdqm.ini.j2
     dest: /var/mqm/rdqm.ini
+    mode: "0644"
   vars:
     Name1: "{{ hostvars[groups['rdqm'][0]].inventory_hostname }}"
     Name2: "{{ hostvars[groups['rdqm'][1]].inventory_hostname }}"
@@ -27,6 +28,7 @@
   ansible.builtin.template:
     src: rdqm.ini.j2
     dest: /var/mqm/rdqm.ini
+    mode: "0644"
   vars:
     Name1: "{{ hostvars[groups['rdqm'][0]].inventory_hostname }}"
     Name2: "{{ hostvars[groups['rdqm'][1]].inventory_hostname }}"
@@ -42,6 +44,7 @@
   ansible.builtin.template:
     src: rdqmdr.ini.j2
     dest: /var/mqm/rdqm.ini
+    mode: "0644"
   vars:
     Name1: "{{ hostvars[groups['dr'][0]].inventory_hostname }}"
     Name2: "{{ hostvars[groups['dr'][1]].inventory_hostname }}"
@@ -57,6 +60,7 @@
   ansible.builtin.template:
     src: rdqmdr.ini.j2
     dest: /var/mqm/rdqm.ini
+    mode: "0644"
   vars:
     Name1: "{{ hostvars[groups['dr'][0]].inventory_hostname }}"
     Name2: "{{ hostvars[groups['dr'][1]].inventory_hostname }}"
