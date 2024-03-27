@@ -304,16 +304,6 @@ Resources:
       Path: "/"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonEC2FullAccess
-#      Policies: 
-#        - 
-#          PolicyName: "root"
-#          PolicyDocument: 
-#            Version: "2012-10-17"
-#            Statement: 
-#              - 
-#                Effect: "Allow"
-#                Action: "*"
-#                Resource: "*"
       RoleName: "RDQM-RootRole"
   RootInstanceProfile:
     Type: "AWS::IAM::InstanceProfile"
@@ -325,55 +315,54 @@ Resources:
   #
   # Resources for Availability Zone A
   #
-  InstanceALaunchConfiguration: 
-    Type: "AWS::AutoScaling::LaunchConfiguration"
+  InstanceALaunchTemplateSpec: 
+    Type: "AWS::EC2::LaunchTemplate"
     Properties:
-      EbsOptimized: 'true'
-      IamInstanceProfile:
-        Ref: "RootInstanceProfile"
-      ImageId:
-        Ref: "AmiForMQ"
-      InstanceType:
-        Ref: "InstanceTypeForMQ"
-      BlockDeviceMappings:
-        - DeviceName: "/dev/sdb"
-          DeleteOnTermination: yes 
-          Ebs:
-            VolumeSize:
-              Ref: "VolumeSize"
-            VolumeType:
-              Ref: "VolumeType"
-            Iops:
-              Ref: "VolumeIops"
-      NetworkInterfaces:
-        - Description: "Network with private RDQM IP address for InstanceA Pacemaker cluster"
-          DeviceIndex: 0
-          DeleteOnTermination: yes 
-          Groups:
-            -  !Ref InstanceSecurityGroup
-            -  !Ref PacemakerSecurityGroup
-            -  !Ref ListenerSecurityGroup
-          PrivateIpAddress:
-            Ref: "AddressA"
-          SubnetId:
-            Ref: PrivateSubnetA
-        - Description: "Network with private IP address for InstanceA Data Replication"
-          DeviceIndex: 2
-          DeleteOnTermination: yes 
-          Groups:
-            -  !Ref DrbdSecurityGroup
-          PrivateIpAddress:
-            Ref: "RdqmAddressA"
-          SubnetId:
-            Ref: RdqmPrivateSubnetA
-      KeyName:
-        Ref: "KeyName"
+      LaunchTemplateName: InstanceALaunchTemplate
+      LaunchTemplateData:
+        EbsOptimized: 'true'
+        IamInstanceProfile:
+          Name: !Ref RootInstanceProfile
+        ImageId:
+          Ref: "AmiForMQ"
+        InstanceType:
+          Ref: "InstanceTypeForMQ"
+        BlockDeviceMappings:
+          - DeviceName: "/dev/sdb"
+            Ebs:
+              DeleteOnTermination: yes 
+              VolumeSize:
+                Ref: "VolumeSize"
+              VolumeType:
+                Ref: "VolumeType"
+              Iops:
+                Ref: "VolumeIops"
+        NetworkInterfaces:
+          - Description: "Network with private RDQM IP address for InstanceA Pacemaker cluster"
+            DeviceIndex: 0
+            DeleteOnTermination: yes 
+            Groups:
+              -  !Ref InstanceSecurityGroup
+              -  !Ref PacemakerSecurityGroup
+              -  !Ref ListenerSecurityGroup
+            SubnetId:
+              Ref: PrivateSubnetA
+          - Description: "Network with private IP address for InstanceA Data Replication"
+            DeviceIndex: 2
+            DeleteOnTermination: yes 
+            Groups:
+              -  !Ref DrbdSecurityGroup
+            SubnetId:
+              Ref: RdqmPrivateSubnetA
+        KeyName:
+          Ref: "KeyName"
   InstanceAGroup: 
     Type: "AWS::AutoScaling::AutoScalingGroup"
     Properties:
       DesiredCapacity: "1"
-      LaunchConfigurationName: 
-        Ref: "InstanceALaunchConfiguration"
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref InstanceALaunchTemplateSpec
+        Version: !GetAtt InstanceALaunchTemplateSpec.LatestVersionNumber
       LifecycleHookSpecificationList:
         -  LifecycleHookName: 'LaunchingLifecycleHook'
            LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
@@ -396,55 +385,54 @@ Resources:
 #
 # Resources for Availability Zone B
 #
-  InstanceBLaunchConfiguration: 
-    Type: "AWS::AutoScaling::LaunchConfiguration"
+  InstanceBLaunchTemplateSpec: 
+    Type: "AWS::EC2::LaunchTemplate"
     Properties:
-      EbsOptimized: 'true'
-      IamInstanceProfile:
-        Ref: "RootInstanceProfile"
-      ImageId:
-        Ref: "AmiForMQ"
-      InstanceType:
-        Ref: "InstanceTypeForMQ"
-      BlockDeviceMappings:
-        - DeviceName: "/dev/sdb"
-          DeleteOnTermination: yes 
-          Ebs:
-            VolumeSize:
-              Ref: "VolumeSize"
-            VolumeType:
-              Ref: "VolumeType"
-            Iops:
-              Ref: "VolumeIops"
-      NetworkInterfaces:
-        - Description: "Network with private IP address for InstanceB Pacemaker cluster"
-          DeviceIndex: 0
-          DeleteOnTermination: yes
-          Groups:
-            -  !Ref InstanceSecurityGroup
-            -  !Ref PacemakerSecurityGroup
-            -  !Ref ListenerSecurityGroup
-          PrivateIpAddress:
-            Ref: "AddressB"
-          SubnetId:
-            Ref: PrivateSubnetB
-        - Description: "Network with private IP address for InstanceB Data Replication"
-          DeviceIndex: 2
-          DeleteOnTermination: yes 
-          Groups:
-            -  !Ref DrbdSecurityGroup
-          PrivateIpAddress:
-            Ref: "RdqmAddressB"
-          SubnetId:
-            Ref: RdqmPrivateSubnetB
-      KeyName:
-        Ref: "KeyName"
+      LaunchTemplateName: InstanceBLaunchTemplate
+      LaunchTemplateData:
+        EbsOptimized: 'true'
+        IamInstanceProfile:
+          Name: !Ref RootInstanceProfile
+        ImageId:
+          Ref: "AmiForMQ"
+        InstanceType:
+          Ref: "InstanceTypeForMQ"
+        BlockDeviceMappings:
+          - DeviceName: "/dev/sdb"
+            Ebs:
+              DeleteOnTermination: yes 
+              VolumeSize:
+                Ref: "VolumeSize"
+              VolumeType:
+                Ref: "VolumeType"
+              Iops:
+                Ref: "VolumeIops"
+        NetworkInterfaces:
+          - Description: "Network with private IP address for InstanceB Pacemaker cluster"
+            DeviceIndex: 0
+            DeleteOnTermination: yes
+            Groups:
+              -  !Ref InstanceSecurityGroup
+              -  !Ref PacemakerSecurityGroup
+              -  !Ref ListenerSecurityGroup
+            SubnetId:
+              Ref: PrivateSubnetB
+          - Description: "Network with private IP address for InstanceB Data Replication"
+            DeviceIndex: 2
+            DeleteOnTermination: yes 
+            Groups:
+              -  !Ref DrbdSecurityGroup
+            SubnetId:
+              Ref: RdqmPrivateSubnetB
+        KeyName:
+          Ref: "KeyName"
   InstanceBGroup: 
     Type: "AWS::AutoScaling::AutoScalingGroup"
     Properties:
       DesiredCapacity: "1"
-      LaunchConfigurationName: 
-        Ref: "InstanceBLaunchConfiguration"
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref InstanceBLaunchTemplateSpec
+        Version: !GetAtt InstanceBLaunchTemplateSpec.LatestVersionNumber
       LifecycleHookSpecificationList:
         -  LifecycleHookName: 'LaunchingLifecycleHook'
            LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
@@ -467,55 +455,54 @@ Resources:
 #
 # Resources for Availability Zone C
 #
-  InstanceCLaunchConfiguration: 
-    Type: "AWS::AutoScaling::LaunchConfiguration"
+  InstanceCLaunchTemplateSpec:
+    Type: "AWS::EC2::LaunchTemplate"
     Properties:
-      EbsOptimized: 'true'
-      IamInstanceProfile:
-        Ref: "RootInstanceProfile"
-      ImageId:
-        Ref: "AmiForMQ"
-      InstanceType:
-        Ref: "InstanceTypeForMQ"
-      BlockDeviceMappings:
-        - DeviceName: "/dev/sdb"
-          DeleteOnTermination: yes 
-          Ebs:
-            VolumeSize:
-              Ref: "VolumeSize"
-            VolumeType:
-              Ref: "VolumeType"
-            Iops:
-              Ref: "VolumeIops"
-      NetworkInterfaces:
-        - Description: "Network with private RDQM IP address for InstanceC Pacemaker cluster"
-          DeviceIndex: 0
-          DeleteOnTermination: yes 
-          Groups:
-            -  !Ref InstanceSecurityGroup
-            -  !Ref PacemakerSecurityGroup
-            -  !Ref ListenerSecurityGroup
-          PrivateIpAddress:
-            Ref: "AddressC"
-          SubnetId:
-            Ref: PrivateSubnetC
-        - Description: "Network with private IP address for InstanceC Data Replication"
-          DeviceIndex: 2
-          DeleteOnTermination: yes 
-          Groups:
-            -  !Ref DrbdSecurityGroup
-          PrivateIpAddress:
-            Ref: "RdqmAddressC"
-          SubnetId:
-            Ref: RdqmPrivateSubnetC
-      KeyName:
-        Ref: "KeyName"
+      LaunchTemplateName: InstanceCLaunchTemplate
+      LaunchTemplateData:
+        EbsOptimized: 'true'
+        IamInstanceProfile:
+          Name: !Ref RootInstanceProfile
+        ImageId:
+          Ref: "AmiForMQ"
+        InstanceType:
+          Ref: "InstanceTypeForMQ"
+        BlockDeviceMappings:
+          - DeviceName: "/dev/sdb"
+            Ebs:
+              DeleteOnTermination: yes 
+              VolumeSize:
+                Ref: "VolumeSize"
+              VolumeType:
+                Ref: "VolumeType"
+              Iops:
+                Ref: "VolumeIops"
+        NetworkInterfaces:
+          - Description: "Network with private RDQM IP address for InstanceC Pacemaker cluster"
+            DeviceIndex: 0
+            DeleteOnTermination: yes 
+            Groups:
+              -  !Ref InstanceSecurityGroup
+              -  !Ref PacemakerSecurityGroup
+              -  !Ref ListenerSecurityGroup
+            SubnetId:
+              Ref: PrivateSubnetC
+          - Description: "Network with private IP address for InstanceC Data Replication"
+            DeviceIndex: 2
+            DeleteOnTermination: yes 
+            Groups:
+              -  !Ref DrbdSecurityGroup
+            SubnetId:
+              Ref: RdqmPrivateSubnetC
+        KeyName:
+          Ref: "KeyName"
   InstanceCGroup: 
     Type: "AWS::AutoScaling::AutoScalingGroup"
     Properties:
       DesiredCapacity: "1"
-      LaunchConfigurationName: 
-        Ref: "InstanceCLaunchConfiguration"
+      LaunchTemplate:
+        LaunchTemplateId: !Ref InstanceCLaunchTemplateSpec
+        Version: !GetAtt InstanceCLaunchTemplateSpec.LatestVersionNumber
       LifecycleHookSpecificationList:
         -  LifecycleHookName: 'LaunchingLifecycleHook'
            LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING'
